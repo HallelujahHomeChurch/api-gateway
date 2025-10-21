@@ -1,5 +1,12 @@
 FROM nginx:1.28-alpine
 
+# Install dockerize
+ENV DOCKERIZE_VERSION v0.9.6
+RUN apk update --no-cache \
+    && apk add --no-cache wget openssl \
+    && wget -O - https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz | tar xzf - -C /usr/local/bin \
+    && apk del wget
+
 # Module versions
 ARG HEADERS_MORE_VERSION=0.39
 
@@ -54,7 +61,13 @@ RUN rm -rf /etc/nginx/conf.d/*
 # Copy all conf.d configurations
 COPY conf.d/ /etc/nginx/conf.d/
 
+# Copy htpasswd template
+COPY .htpasswd.tmpl /etc/nginx/.htpasswd.tmpl
+
 # Validate nginx configuration
 RUN nginx -t
 
 EXPOSE 10000
+
+# Use dockerize to generate htpasswd file and start nginx
+CMD dockerize -template /etc/nginx/.htpasswd.tmpl:/etc/nginx/.htpasswd nginx -g 'daemon off;'
