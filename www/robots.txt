@@ -1,0 +1,11 @@
+# robots.txt for www.alive.org.tw
+
+User-agent: *
+Allow: /api/
+Disallow: /api/bible
+Allow: /health
+Disallow: /metrics
+
+# Sitemap (if available)
+# Sitemap: https://www.alive.org.tw/sitemap.xml
+

@@ -24,5 +24,8 @@ COPY conf.d/ /usr/local/openresty/nginx/conf/conf.d/
 # Copy custom Lua modules
 COPY lua/ /usr/local/openresty/lualib/
 
+# Copy static files (favicon, etc.)
+COPY www/ /usr/local/openresty/nginx/html/
+
 # Expose port
 EXPOSE 10000
