@@ -5,10 +5,18 @@ RUN apk add --no-cache curl git make gcc musl-dev
 
 ENV DOCKERIZE_VERSION=v0.9.7
 
-RUN apk update \
+RUN arch=$(uname -m) \
+ && case ${arch} in \
+      x86_64) dockerize_arch=amd64 ;; \
+      aarch64) dockerize_arch=arm64 ;; \
+      *) echo "Unsupported architecture: ${arch}" >&2; exit 1 ;; \
+    esac \
+ && apk update \
  && apk add --no-cache wget openssl \
- && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
- && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+ && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-${dockerize_arch}-$DOCKERIZE_VERSION.tar.gz \
+ && tar -C /usr/local/bin -xzvf dockerize-linux-${dockerize_arch}-$DOCKERIZE_VERSION.tar.gz \
+ && chmod +x /usr/local/bin/dockerize \
+ && rm -f dockerize-linux-${dockerize_arch}-$DOCKERIZE_VERSION.tar.gz
 
 WORKDIR /tmp
 RUN opm get ledgetech/lua-resty-http
@@ -24,8 +32,10 @@ RUN set -x \
     && addgroup -S -g 101 nginx \
     && adduser -S -G nginx -u 101 -s /sbin/nologin nginx
 
-# Copy dockerize
+# Copy dockerize (ensure it exists and is executable)
 COPY --from=builder /usr/local/bin/dockerize /usr/local/bin/dockerize
+RUN chmod +x /usr/local/bin/dockerize && \
+    test -f /usr/local/bin/dockerize || (echo "dockerize not found!" && exit 1)
 
 # Copy OPM modules
 COPY --from=builder ${OPENRESTY_HOME}/site/lualib ${OPENRESTY_HOME}/site/lualib
