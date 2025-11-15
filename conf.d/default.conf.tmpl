@@ -8,7 +8,9 @@
 
 server {
     listen {{ .Env.EXPOSE_PORT }} reuseport;
-    server_name www.alive.org.tw;
+    server_name 
+      www.alive.org.tw
+      www-test.alive.org.tw;
 
     # Security: Limit concurrent connections per IP
     limit_conn addr 50;
