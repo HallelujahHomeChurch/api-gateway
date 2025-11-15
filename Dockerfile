@@ -1,6 +1,8 @@
 # --- Stage 1: The Builder ---
 FROM openresty/openresty:alpine-fat AS builder
 
+RUN apk add --no-cache curl git make gcc musl-dev
+
 ENV DOCKERIZE_VERSION=v0.9.7
 
 RUN arch=$(uname -m) \
@@ -32,7 +34,8 @@ RUN set -x \
 COPY --from=builder /usr/local/bin/dockerize /usr/local/bin/dockerize
 
 # Copy OPM modules
-COPY --from=builder /usr/local/openresty/lualib/ ${OPENRESTY_HOME}/lualib/
+COPY --from=builder ${OPENRESTY_HOME}/site/lualib ${OPENRESTY_HOME}/site/lualib
+COPY --from=builder ${OPENRESTY_HOME}/lualib ${OPENRESTY_HOME}/lualib
 
 # Copy nginx configuration
 COPY nginx.conf.tmpl ${OPENRESTY_HOME}/nginx/conf/nginx.conf.tmpl

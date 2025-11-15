@@ -3,12 +3,15 @@
 # ============================================================================
 # Purpose: Main gateway server routing requests to backend services via Dapr
 # Port: ${EXPOSE_PORT}
-# Server Name: www.alive.org.tw
+# Server Name: www-test.alive.org.tw
 # ============================================================================
 
 server {
     listen {{ .Env.EXPOSE_PORT }} reuseport;
-    server_name www.alive.org.tw;
+    server_name www-test.alive.org.tw;
+
+    allow 61.216.91.62;
+    deny all;
 
     # Security: Limit concurrent connections per IP
     limit_conn addr 50;
