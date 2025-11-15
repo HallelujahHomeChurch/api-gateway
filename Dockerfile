@@ -5,16 +5,10 @@ RUN apk add --no-cache curl git make gcc musl-dev
 
 ENV DOCKERIZE_VERSION=v0.9.7
 
-RUN arch=$(uname -m) \
- && case ${arch} in \
-      x86_64) dockerize_arch=amd64 ;; \
-      aarch64) dockerize_arch=arm64 ;; \
-      *) echo "Unsupported architecture: ${arch}" >&2; exit 1 ;; \
-    esac \
- && apk update \
+RUN apk update \
  && apk add --no-cache wget openssl \
- && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-${dockerize_arch}-$DOCKERIZE_VERSION.tar.gz \
- && tar -C /usr/local/bin -xzvf dockerize-linux-${dockerize_arch}-$DOCKERIZE_VERSION.tar.gz
+ && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+ && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 WORKDIR /tmp
 RUN opm get ledgetech/lua-resty-http
