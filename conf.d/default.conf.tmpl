@@ -1,0 +1,41 @@
+# ============================================================================
+# API Gateway Server Configuration
+# ============================================================================
+# Purpose: Main gateway server routing requests to backend services via Dapr
+# Port: ${EXPOSE_PORT}
+# Server Name: ${SERVER_NAME}
+# ============================================================================
+
+server {
+    listen {{ .Env.EXPOSE_PORT }} reuseport;
+    server_name {{ .Env.SERVER_NAME }};
+
+    # Security: Limit concurrent connections per IP
+    limit_conn addr 50;
+
+    # ========================================================================
+    # Include Common Configurations
+    # ========================================================================
+    include {{ .Env.OPENRESTY_HOME }}/nginx/conf/conf.d/common/error.conf;     # Error handling pages
+    include {{ .Env.OPENRESTY_HOME }}/nginx/conf/conf.d/common/health.conf;    # Health check endpoints
+    include {{ .Env.OPENRESTY_HOME }}/nginx/conf/conf.d/common/fqdn.conf;      # Backend FQDN variables
+
+    # Include API route definitions
+    include {{ .Env.OPENRESTY_HOME }}/nginx/conf/conf.d/api/*.conf;
+
+    # ========================================================================
+    # Location: Default Route (via Dapr)
+    # ========================================================================
+    # Pattern: / (all other requests)
+    # Backend: alive-app service via Dapr sidecar
+    # Dapr app-id: alive-app
+    # Auth: No additional gateway auth (handled downstream if needed)
+    # ========================================================================
+    location / {
+        limit_req zone=api_limit burst=50 nodelay;
+
+        include {{ .Env.OPENRESTY_HOME }}/nginx/conf/conf.d/common/dapr.conf;
+        proxy_pass $alive_app_base$uri$is_args$args;
+    }
+}
+
