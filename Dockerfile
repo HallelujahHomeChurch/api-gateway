@@ -5,6 +5,7 @@ RUN apk add --no-cache curl git make gcc musl-dev
 
 WORKDIR /tmp
 RUN opm get ledgetech/lua-resty-http
+RUN opm get SkyLothar/lua-resty-jwt
 
 # --- Stage 2: The Final Image ---
 FROM openresty/openresty:alpine

@@ -20,9 +20,11 @@ api-gateway/
 │       ├── error.conf      # Error handling
 │       ├── fqdn.conf       # Backend service FQDN variables
 │       ├── health.conf     # Health check endpoints
+│       ├── jwt_auth.conf   # JWT authentication configuration
 │       └── streaming.conf  # Streaming configuration
 ├── lua/                    # Custom Lua modules
-│   └── health_services.lua # Health check service configuration
+│   ├── health_services.lua # Health check service configuration
+│   └── jwt_auth.lua       # JWT authentication module
 └── README.md
 ```
 
@@ -58,6 +60,7 @@ curl http://localhost:10000/health
 - `SERVER_NAME`: Server name (default: `localhost`)
 - `EXPOSE_PORT`: Listening port (default: `10000`)
 - `DAPR_SIDECAR_URL`: Dapr sidecar URL (default: `http://127.0.0.1:3500`)
+- `JWT_SECRET`: JWT secret key for token verification (must match account-api secret)
 
 ## 📝 Configuration
 
@@ -86,6 +89,69 @@ _M.services = {
 1. Create a new `.conf.tmpl` file in `conf.d/api/`
 2. Define location rules and corresponding Dapr service invocations
 3. Reference existing `bible.conf.tmpl` or `search.conf.tmpl`
+
+### JWT Authentication
+
+The API Gateway supports JWT token authentication with three modes:
+
+#### Authentication Modes
+
+1. **`none`** - No authentication required
+   - Requests are allowed without JWT token
+   - No user headers are set
+
+2. **`optional`** - Optional authentication
+   - If JWT token is present, it will be validated
+   - If token is valid, user headers are set
+   - If no token or invalid token, request is allowed (without user headers)
+
+3. **`required`** - Required authentication
+   - JWT token must be present and valid
+   - Returns 401 if token is missing or invalid
+   - User headers are set on successful authentication
+
+#### Usage
+
+JWT authentication is enabled globally with default mode `none`. Override the authentication mode in any location block:
+
+```nginx
+# Default mode (no authentication) - no need to set $auth_mode
+location /public/ {
+    proxy_pass $backend;
+}
+
+# Optional authentication
+location /api/optional/ {
+    set $auth_mode "optional";
+    proxy_pass $backend;
+}
+
+# Required authentication
+location /api/protected/ {
+    set $auth_mode "required";
+    proxy_pass $backend;
+}
+```
+
+**Note**: The `jwt_auth.conf` is already included in `default.conf`, so you only need to set `$auth_mode` variable in location blocks that need different authentication modes.
+
+#### Configuration
+
+- **Default Mode**: JWT authentication is enabled globally with default mode `none` (set in `default.conf`)
+- **Environment Variable**: Set `JWT_SECRET` to match the secret used by account-api service
+- **Token Format**: JWT tokens should be sent in the Authorization header:
+  ```
+  Authorization: Bearer <token>
+  ```
+
+#### Headers Set After Authentication
+
+After successful JWT verification, the following headers are automatically set:
+- `X-User-ID`: User ID from JWT `sub` claim (or `user_id`/`id`)
+- `X-Roles`: User roles (comma-separated, supports array or string)
+- `X-Permissions`: User permissions (comma-separated, supports array or string)
+
+**Security Note**: These headers are automatically cleared before authentication to prevent header injection attacks.
 
 ## ☁️ Azure Container Apps Deployment
 
