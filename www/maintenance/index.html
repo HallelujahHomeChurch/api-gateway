@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系統維護中 | 活水教會</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --text-main: #1f2937;
+            --text-secondary: #4b5563;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .maintenance-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .icon-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 16px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 50%;
+            border-radius: 4px;
+            animation: indeterminate 1.5s infinite linear;
+            transform-origin: 0% 50%;
+        }
+
+        @keyframes indeterminate {
+            0% {
+                transform: translateX(0) scaleX(0);
+            }
+            40% {
+                transform: translateX(0) scaleX(0.4);
+            }
+            100% {
+                transform: translateX(100%) scaleX(0.5);
+            }
+        }
+
+        .contact-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+            border-top: 1px solid #e5e7eb;
+            padding-top: 24px;
+            margin-top: 8px;
+        }
+
+        .contact-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .contact-info a:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            .maintenance-container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-container">
+        <div class="icon-container">
+            <img src="icon.png" alt="Icon" />
+        </div>
+        
+        <h1>系統維護中</h1>
+        
+        <p>為提供更好的服務品質，我們目前正在進行系統升級與維護作業。<br>預計稍後即會恢復正常運作，造成您的不便，敬請見諒。</p>
+        
+        <div class="contact-info">
+            如有緊急事項，請聯繫：<br>
+            信箱：<a href="mailto:home.church@msa.hinet.net">home.church@msa.hinet.net</a><br>
+            電話：<a href="tel:0287731972">(02) 87731972</a>
+        </div>
+    </div>
+</body>
+</html>
